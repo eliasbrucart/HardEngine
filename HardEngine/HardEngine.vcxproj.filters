@@ -4,6 +4,9 @@
     <Filter Include="BaseGame">
       <UniqueIdentifier>{7e5c8051-0704-4b1f-b58d-7fa1abce484d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Export">
+      <UniqueIdentifier>{c57da7bc-6ec3-4217-bbe8-e2c5854a9339}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -14,6 +17,9 @@
   <ItemGroup>
     <ClInclude Include="src\base_game.h">
       <Filter>BaseGame</Filter>
+    </ClInclude>
+    <ClInclude Include="src\export.h">
+      <Filter>Export</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
