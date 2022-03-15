@@ -8,7 +8,7 @@ int main() {
     BaseGame* base = new BaseGame();
 
     if (base) {
-        base->CreateWindow(800, 600, "HardGamesEngine");
+        base->InitEngine();
         base->StartGLEWContext();
         base->UpdateEngine();
         base->UnloadEngine();

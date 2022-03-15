@@ -7,11 +7,17 @@
     <Filter Include="Export">
       <UniqueIdentifier>{c57da7bc-6ec3-4217-bbe8-e2c5854a9339}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Window">
+      <UniqueIdentifier>{71c74347-ee9c-46bb-87e1-2b590246c332}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\base_game.cpp">
       <Filter>BaseGame</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>Window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -20,6 +26,9 @@
     </ClInclude>
     <ClInclude Include="src\export.h">
       <Filter>Export</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window.h">
+      <Filter>Window</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

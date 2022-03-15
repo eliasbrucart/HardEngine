@@ -22,44 +22,51 @@ const char* fragmentShaderSource = "#version 330 core\n"
 
 GLFWwindow* window;
 
-unsigned int shaderProgram;
-unsigned int VBO, VAO, EBO;
+unsigned int shaderProgram; //Pasar a clase Shader cuando este
+unsigned int VBO, VAO, EBO; //Pasar a clase renderer cuando este
 
 BaseGame::BaseGame() {
-
+    _window = new Window(800, 600);
 }
 
 BaseGame::~BaseGame() {
+    if (_window != NULL) {
+        delete _window;
+        _window = NULL;
+    }
+}
 
+void BaseGame::InitEngine() {
+    _window->CreateWindow(800, 600, "HardEngine");
 }
 
 void BaseGame::StartEngine() {
 	
 }
 
-void BaseGame::CreateWindow(int width, int height, const char* windowName) {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    //int windowWidth = 800;
-    //int windowHeight = 600;
-    window = glfwCreateWindow(width, height, windowName, NULL, NULL);
-
-    //if (!glfwInit())
-    //    return -1;
-
-    if (window == NULL) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        //return -1;
-    }
-
-    //glfwSetFramebufferSizeCallback(window, windowReSizeCallback(window, width, height));
-
-    glfwMakeContextCurrent(window);
-}
+//void BaseGame::CreateWindow(int width, int height, const char* windowName) {
+//    glfwInit();
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//    //int windowWidth = 800;
+//    //int windowHeight = 600;
+//    window = glfwCreateWindow(width, height, windowName, NULL, NULL);
+//
+//    //if (!glfwInit())
+//    //    return -1;
+//
+//    if (window == NULL) {
+//        std::cout << "Failed to create GLFW window" << std::endl;
+//        glfwTerminate();
+//        //return -1;
+//    }
+//
+//    windowReSizeCallback(window, width, height);
+//
+//    glfwMakeContextCurrent(window);
+//}
 
 void BaseGame::StartGLEWContext() {
     glewExperimental = GL_TRUE;
@@ -149,8 +156,8 @@ void BaseGame::StartGLEWContext() {
 }
 
 void BaseGame::UpdateEngine() {
-    while (!glfwWindowShouldClose(window)) {
-        input(window);
+    while (!glfwWindowShouldClose(_window->GetWindow())) {
+        input(_window->GetWindow());
         glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -158,7 +165,7 @@ void BaseGame::UpdateEngine() {
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(_window->GetWindow());
 
         glfwPollEvents();
     }
@@ -178,6 +185,6 @@ void BaseGame::input(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
 }
 
-//GLFWframebuffersizefun BaseGame::windowReSizeCallback(GLFWwindow* window, int width, int height) {
-//    glViewport(0, 0, width, height);
-//}
+void BaseGame::windowReSizeCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
