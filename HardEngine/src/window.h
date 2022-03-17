@@ -21,7 +21,6 @@ namespace Engine {
 		int GetWidth();
 		void SetHeight(int height);
 		int GetHeight();
-		void windowReSizeCallback(GLFWwindow* window, int width, int height);
 	};
 }
 

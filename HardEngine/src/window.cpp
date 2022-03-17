@@ -7,6 +7,10 @@
 
 using namespace Engine;
 
+void windowReSizeCallback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 Window::Window() {
     _width = 800;
     _height = 600;
@@ -40,9 +44,8 @@ void Window::CreateWindow(int width, int height, const char* windowName) {
         //return -1;
     }
 
-    windowReSizeCallback(_window, width, height);
-
     glfwMakeContextCurrent(_window);
+    glfwSetFramebufferSizeCallback(_window, windowReSizeCallback);
 }
 
 GLFWwindow* Window::GetWindow() {
@@ -63,8 +66,4 @@ void Window::SetHeight(int height) {
 
 int Window::GetHeight() {
 	return _height;
-}
-
-void Window::windowReSizeCallback(GLFWwindow* window, int width, int height) {
-	glViewport(0, 0, width, height);
 }
