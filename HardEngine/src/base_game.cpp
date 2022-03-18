@@ -23,10 +23,11 @@ const char* fragmentShaderSource = "#version 330 core\n"
 GLFWwindow* window;
 
 unsigned int shaderProgram; //Pasar a clase Shader cuando este
-unsigned int VBO, VAO, EBO; //Pasar a clase renderer cuando este
+unsigned int VBO, VAO, EBO = 0; //Pasar a clase shape, los datos de vertices, indices, etc son parte de cada shape que se instancien en el juego
 
 BaseGame::BaseGame() {
     _window = new Window(800, 600);
+    _renderer = new Renderer();
 }
 
 BaseGame::~BaseGame() {
@@ -34,49 +35,22 @@ BaseGame::~BaseGame() {
         delete _window;
         _window = NULL;
     }
+    if (_renderer != NULL) {
+        delete _renderer;
+        _renderer = NULL;
+    }
 }
 
 void BaseGame::InitEngine() {
     _window->CreateWindow(800, 600, "HardEngine");
+    _renderer->InitGLEW();
 }
 
 void BaseGame::StartEngine() {
 	
 }
 
-//void BaseGame::CreateWindow(int width, int height, const char* windowName) {
-//    glfwInit();
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-//    //int windowWidth = 800;
-//    //int windowHeight = 600;
-//    window = glfwCreateWindow(width, height, windowName, NULL, NULL);
-//
-//    //if (!glfwInit())
-//    //    return -1;
-//
-//    if (window == NULL) {
-//        std::cout << "Failed to create GLFW window" << std::endl;
-//        glfwTerminate();
-//        //return -1;
-//    }
-//
-//    windowReSizeCallback(window, width, height);
-//
-//    glfwMakeContextCurrent(window);
-//}
-
 void BaseGame::StartGLEWContext() {
-    glewExperimental = GL_TRUE;
-    glewInit();
-    if (glewInit() != GLEW_OK) {
-        std::cout << "Error in GLEW INIT" << std::endl;
-        std::cout << glewGetErrorString(glewInit()) << std::endl;
-        //return false;
-    }
-
     //compilando el shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER); //Al crear el shader hay que especificar el tipo del mismo, en este caso el vertex shader. Lo almacenamos en nuestra variable de shader.
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); //Una vez creado el shader tenemos que especificarle que codigo es el que contendra, le pasamos vertexShaderSource que contiene el codigo fuente del vertex shader
@@ -123,68 +97,52 @@ void BaseGame::StartGLEWContext() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    float vertices[] = {
+    float vertices[9] = {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f
     };
 
-    unsigned int indices[] = {
+    unsigned int indices[3] = {
         0, 1, 2
     };
 
-
     //creando el vertex buffer object
     //unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO); //esto genera el objeto de buffer de vertices, se debe hacer una sola vez
-    glGenBuffers(1, &EBO);
-    glBindVertexArray(VAO);
+    _renderer->GenerateVAO(VAO);
+    _renderer->GenerateVBO(VBO);
+    _renderer->GenerateEBO(EBO);
+    _renderer->BindVAO(VAO);
+    _renderer->BindVBO(VBO, vertices, 9); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
+    _renderer->BindEBO(EBO, indices, 3); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); //Reservamos memoria para el buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); //Le especificamos al buffer cual es el contenido que tendra y como seran usados estos datos al momento de dibujar.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); //pasar a la clase shader cuando este
+    glEnableVertexAttribArray(0); //pasar a la clase shader cuando este
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
+    //esto el lo mismo que unbind buffers de renderer
+    _renderer->UnbindBuffers();
 }
 
 void BaseGame::UpdateEngine() {
     while (!glfwWindowShouldClose(_window->GetWindow())) {
         input(_window->GetWindow());
-        glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        _renderer->StartFrame(0.5f, 0.5f, 0.5f);
 
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glUseProgram(shaderProgram); //pasar a la clase shader cuando este
+        _renderer->BindVAO(VAO);
+        _renderer->Draw();
 
-        glfwSwapBuffers(_window->GetWindow());
-
-        glfwPollEvents();
+        _renderer->EndFrame(_window->GetWindow());
     }
 }
 
 void BaseGame::UnloadEngine() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
-
+    _renderer->DeleteBuffers(VAO, VBO, EBO);
+    glDeleteProgram(shaderProgram); //pasar a shader
     glfwTerminate();
 }
 
 void BaseGame::input(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-}
-
-void BaseGame::windowReSizeCallback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
 }
