@@ -8,16 +8,20 @@ using namespace Engine;
 
 const char* vertexShaderSource = "#version 330 core\n"
 "layout (location = 0) in vec3 aPos;\n"
+"in vec3 aColor;\n"
+"out vec3 ourColor;\n"
 "void main()\n"
 "{\n"
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"   gl_Position = vec4(aPos, 1.0);\n"
+"   ourColor = aColor;\n"
 "}\0";
 
 const char* fragmentShaderSource = "#version 330 core\n"
 "out vec4 FragColor;\n"
+"in vec3 ourColor;\n"
 "void main()\n"
 "{\n"
-"   FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+"   FragColor = vec4(ourColor, 1.0);\n"
 "}\n\0";
 
 GLFWwindow* window;
@@ -97,10 +101,10 @@ void BaseGame::StartGLEWContext() {
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    float vertices[9] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f
+    float vertices[18] = {
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
     unsigned int indices[3] = {
@@ -113,11 +117,14 @@ void BaseGame::StartGLEWContext() {
     _renderer->GenerateVBO(VBO);
     _renderer->GenerateEBO(EBO);
     _renderer->BindVAO(VAO);
-    _renderer->BindVBO(VBO, vertices, 9); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
+    _renderer->BindVBO(VBO, vertices, 18); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
     _renderer->BindEBO(EBO, indices, 3); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); //pasar a la clase shader cuando este
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); //pasar a la clase shader cuando este
     glEnableVertexAttribArray(0); //pasar a la clase shader cuando este
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));//El ultimo parametro indica desde donde se debe empezar a leer para interpretar los atributos en este caso de color.
+    glEnableVertexAttribArray(1);
 
     //esto el lo mismo que unbind buffers de renderer
     _renderer->UnbindBuffers();
@@ -128,7 +135,12 @@ void BaseGame::UpdateEngine() {
         input(_window->GetWindow());
         _renderer->StartFrame(0.5f, 0.5f, 0.5f);
 
+        //float timeValue = glfwGetTime();
+        //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUseProgram(shaderProgram); //pasar a la clase shader cuando este
+        //glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
         _renderer->BindVAO(VAO);
         _renderer->Draw();
 
