@@ -6,27 +6,8 @@
 
 using namespace Engine;
 
-const char* vertexShaderSource = "#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"in vec3 aColor;\n"
-"out vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   gl_Position = vec4(aPos, 1.0);\n"
-"   ourColor = aColor;\n"
-"}\0";
-
-const char* fragmentShaderSource = "#version 330 core\n"
-"out vec4 FragColor;\n"
-"in vec3 ourColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = vec4(ourColor, 1.0);\n"
-"}\n\0";
-
 GLFWwindow* window;
 
-unsigned int shaderProgram; //Pasar a clase Shader cuando este
 unsigned int VBO, VAO, EBO = 0; //Pasar a clase shape, los datos de vertices, indices, etc son parte de cada shape que se instancien en el juego
 
 BaseGame::BaseGame() {
@@ -48,58 +29,10 @@ BaseGame::~BaseGame() {
 void BaseGame::InitEngine() {
     _window->CreateWindow(800, 600, "HardEngine");
     _renderer->InitGLEW();
+    shaders.Create("src//vertexShader.vs", "src//fragmentShader.fs");
 }
 
-void BaseGame::StartEngine() {
-	
-}
-
-void BaseGame::StartGLEWContext() {
-    //compilando el shader
-    unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER); //Al crear el shader hay que especificar el tipo del mismo, en este caso el vertex shader. Lo almacenamos en nuestra variable de shader.
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); //Una vez creado el shader tenemos que especificarle que codigo es el que contendra, le pasamos vertexShaderSource que contiene el codigo fuente del vertex shader
-    glCompileShader(vertexShader); //Compilamos el shader, luego hay que linkearlo al programa principal para que sea ejecutado en la GPU, lo linkeamos generando un objeto de tipo programa.
-
-    // check for shader compile errors
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //compilando el shader (seguimos los mismos pasos que para compilar el vertex shader)
-    unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);;
-    glCompileShader(fragmentShader);
-
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    //Creando objeto de tipo shader program
-    //unsigned int shaderProgram;
-    shaderProgram = glCreateProgram(); //Para poder usar los shaders debemos crear los objetos de programa y asi linkearlos con el main program y sean utilizados.
-    glAttachShader(shaderProgram, vertexShader); //Enlazamos el objeto de tipo vertex shader a el objeto de tipo programa.
-    glAttachShader(shaderProgram, fragmentShader); //Enlazamos el objeto de tipo fragment shader a el objeto de tipo programa.
-    glLinkProgram(shaderProgram);
-    //glUseProgram(shaderProgram); //Habilitamos el uso del objeto de tipo programa que esta enlazado con los objetos de shader que contienen el vertex y fragment shader
-    //asi podremos ejecutar los dos shaders previamente programados.
-
-    // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
+void BaseGame::StartTriangleData() {
 
     float vertices[18] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -138,7 +71,8 @@ void BaseGame::UpdateEngine() {
         //float timeValue = glfwGetTime();
         //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        glUseProgram(shaderProgram); //pasar a la clase shader cuando este
+        //glUseProgram(shaderProgram); //pasar a la clase shader cuando este
+        shaders.Use();
         //glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
         _renderer->BindVAO(VAO);
@@ -150,7 +84,7 @@ void BaseGame::UpdateEngine() {
 
 void BaseGame::UnloadEngine() {
     _renderer->DeleteBuffers(VAO, VBO, EBO);
-    glDeleteProgram(shaderProgram); //pasar a shader
+    shaders.DeleteProgram();
     glfwTerminate();
 }
 

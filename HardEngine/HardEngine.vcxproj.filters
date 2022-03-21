@@ -13,6 +13,9 @@
     <Filter Include="Renderer">
       <UniqueIdentifier>{d0f38f2b-ecb2-4ea8-aa53-ac088f8a3fb0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{aef08ae8-9d66-407a-b66d-166dc7bb66fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -24,6 +27,9 @@
     </ClCompile>
     <ClCompile Include="src\renderer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +44,9 @@
     </ClInclude>
     <ClInclude Include="src\renderer.h">
       <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>Shader</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
