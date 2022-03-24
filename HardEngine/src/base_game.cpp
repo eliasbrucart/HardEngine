@@ -1,6 +1,12 @@
 #include "base_game.h"
 #include "GL/glew.h" //se debe incluir primero glew, este incluye encabezados de OpenGL
 #include "GLFW/glfw3.h" //se debe incluir segundo glfw
+#include "gtc/type_ptr.hpp"
+#include "vec3.hpp"
+#include "mat4x4.hpp"
+#include "ext/matrix_clip_space.hpp"
+#include "ext/matrix_transform.hpp"
+#include "ext/scalar_constants.hpp"
 
 #include <iostream>
 
@@ -30,6 +36,7 @@ void BaseGame::InitEngine() {
     _window->CreateWindow(800, 600, "HardEngine");
     _renderer->InitGLEW();
     shaders.Create("src//vertexShader.vs", "src//fragmentShader.fs");
+    StartTriangleData();
 }
 
 void BaseGame::StartTriangleData() {
@@ -72,6 +79,21 @@ void BaseGame::UpdateEngine() {
         //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         //glUseProgram(shaderProgram); //pasar a la clase shader cuando este
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        // note that we're translating the scene in the reverse direction of where we want to move
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+
+        unsigned int modelLoc = glGetUniformLocation(shaders.GetID(), "model");
+        unsigned int viewLoc = glGetUniformLocation(shaders.GetID(), "view");
+        unsigned int projectionLoc = glGetUniformLocation(shaders.GetID(), "projection");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
         shaders.Use();
         //glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 

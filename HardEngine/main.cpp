@@ -9,7 +9,6 @@ int main() {
 
     if (base) {
         base->InitEngine();
-        base->StartGLEWContext();
         base->UpdateEngine();
         base->UnloadEngine();
         delete base;
