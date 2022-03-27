@@ -87,14 +87,16 @@ void BaseGame::StartTriangleData() {
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));//
     glEnableVertexAttribArray(2);
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glGenTextures(1, &texture); //toma cuantas texturas queremos generar y la almacenamos en una matriz de unsigned int.
+    glBindTexture(GL_TEXTURE_2D, texture); //enlazamos la textura en un objeto de textura
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    stbi_set_flip_vertically_on_load(true);
 
     int width;
     int height;
@@ -104,14 +106,14 @@ void BaseGame::StartTriangleData() {
 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); //generamos la textura propiamente dicha y especificamos la textura
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
     {
         std::cout << "Failed to load texture" << std::endl;
     }
-    stbi_image_free(data);
+    stbi_image_free(data); //como todo objeto enlazado hay que liberarlo de la memoria
 
     //esto el lo mismo que unbind buffers de renderer
     _renderer->UnbindBuffers();
@@ -126,21 +128,21 @@ void BaseGame::UpdateEngine() {
         //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
         //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         //glUseProgram(shaderProgram); //pasar a la clase shader cuando este
-        //glm::mat4 model = glm::mat4(1.0f);
-        //glm::mat4 view = glm::mat4(1.0f);
-        //glm::mat4 projection = glm::mat4(1.0f);
-        ////model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
         //// note that we're translating the scene in the reverse direction of where we want to move
-        //view = glm::translate(view, glm::vec3(0.0f, 0.0f, -1.0f));
-        ////projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.01f, 100.0f);
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.01f, 100.0f);
         //projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
         //
-        //unsigned int modelLoc = glGetUniformLocation(shaders.GetID(), "model");
-        //unsigned int viewLoc = glGetUniformLocation(shaders.GetID(), "view");
-        //unsigned int projectionLoc = glGetUniformLocation(shaders.GetID(), "projection");
-        //glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        //glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-        //glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+        unsigned int modelLoc = glGetUniformLocation(shaders.GetID(), "model");
+        unsigned int viewLoc = glGetUniformLocation(shaders.GetID(), "view");
+        unsigned int projectionLoc = glGetUniformLocation(shaders.GetID(), "projection");
+        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindTexture(GL_TEXTURE_2D, texture);
 
