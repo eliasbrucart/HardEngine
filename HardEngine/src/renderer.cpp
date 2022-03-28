@@ -25,7 +25,7 @@ void Renderer::InitGLEW() {
 
 void Renderer::StartFrame(float r, float g, float b) {
     glClearColor(r, g, b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Renderer::EndFrame(GLFWwindow* window) {
@@ -76,9 +76,13 @@ void Renderer::UnbindBuffers() {
     glUseProgram(0);
 }
 
-//void Renderer::Draw(unsigned int& vao, unsigned int& vbo, float vertices, int verticesAmount, unsigned int* indices, int indicesAmount) {
-//
-//}
+void Renderer::Draw(unsigned int& vao, unsigned int& vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount) {
+    BindVAO(vao);
+    //Agregar update de buffers de vao y vbo si es necesario
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    UnbindBuffers();
+}
 
 void Renderer::Draw() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

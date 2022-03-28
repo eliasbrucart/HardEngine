@@ -2,9 +2,6 @@
 #define SHADER_H
 
 #include "export.h"
-#include<fstream>
-#include<sstream>
-#include<iostream>
 
 namespace Engine {
 	class HARD_ENGINE_API Shader {

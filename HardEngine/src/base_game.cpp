@@ -20,6 +20,10 @@ unsigned int VBO, VAO, EBO = 0; //Pasar a clase shape, los datos de vertices, in
 
 unsigned int texture; //pasar a texture importer cuando este lista la clase
 
+glm::mat4 model = glm::mat4(1.0f);
+glm::mat4 view = glm::mat4(1.0f);
+glm::mat4 projection = glm::mat4(1.0f);
+
 BaseGame::BaseGame() {
     _window = new Window(800, 600);
     _renderer = new Renderer();
@@ -36,32 +40,39 @@ BaseGame::~BaseGame() {
     }
 }
 
+void BaseGame::StartEngine() {
+    InitEngine();
+    UpdateEngine();
+    UnloadEngine();
+}
+
 void BaseGame::InitEngine() {
     _window->CreateWindow(800, 600, "HardEngine");
     _renderer->InitGLEW();
-    shaders.Create("src//vertexTextureShader.vs", "src//fragmentTextureShader.fs");
+    shaders.Create("..//HardEngine//src//vertexTextureShader.vs", "..//HardEngine//src//fragmentTextureShader.fs");
     StartTriangleData();
+    InitGame();
 }
 
 void BaseGame::StartTriangleData() {
-
+    glEnable(GL_DEPTH_TEST);
     //triangle shape
     float triVertices[18] = {
         -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+         0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+         0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
     };
 
     unsigned int triIndices[3] = {
         0, 1, 2
     };
 
-    //quad shape
+    //quad shape con UVs
     float quadVertices[32] = {
         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,
         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,
        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,
-       -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f
+       -0.5f,  0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f
     };
 
     unsigned int quadIndices[6] = {
@@ -78,6 +89,7 @@ void BaseGame::StartTriangleData() {
     _renderer->BindVBO(VBO, quadVertices, 32); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
     _renderer->BindEBO(EBO, quadIndices, 6); //Cuando se pase a la clase Shape no hardcodear la cantidad de indices, si pasamos mal la cantidad de indices puede que no dibuje
 
+    //Pasar los attrib pointer a shader y crearlos dependiendo si hay textura o no
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //pasar a la clase shader cuando este
     glEnableVertexAttribArray(0); //pasar a la clase shader cuando este
 
@@ -102,7 +114,7 @@ void BaseGame::StartTriangleData() {
     int height;
     int nrChannels;
 
-    unsigned char* data = stbi_load("resources/HG-logo2.jpg", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("..//HardEngine//resources//HG-logo2.jpg", &width, &height, &nrChannels, 0);
 
     if (data)
     {
@@ -113,9 +125,15 @@ void BaseGame::StartTriangleData() {
     {
         std::cout << "Failed to load texture" << std::endl;
     }
-    stbi_image_free(data); //como todo objeto enlazado hay que liberarlo de la memoria
+    stbi_image_free(data); //como todo objeto enlazado y utilizado hay que liberarlo de la memoria
 
-    //esto el lo mismo que unbind buffers de renderer
+    shaders.Use();
+
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.01f, 100.0f);
+
+    //esto es lo mismo que unbind buffers de renderer
     _renderer->UnbindBuffers();
 }
 
@@ -123,20 +141,14 @@ void BaseGame::UpdateEngine() {
     while (!glfwWindowShouldClose(_window->GetWindow())) {
         input(_window->GetWindow());
         _renderer->StartFrame(0.5f, 0.5f, 0.5f);
+        
+        UpdateGame();
 
-        //float timeValue = glfwGetTime();
-        //float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        //int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-        //glUseProgram(shaderProgram); //pasar a la clase shader cuando este
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-        glm::mat4 projection = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        //// note that we're translating the scene in the reverse direction of where we want to move
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.01f, 100.0f);
         //projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
-        //
+
+        //pasar a shader a la parte de Draw
+        //// note that we're translating the scene in the reverse direction of where we want to move
+        
         unsigned int modelLoc = glGetUniformLocation(shaders.GetID(), "model");
         unsigned int viewLoc = glGetUniformLocation(shaders.GetID(), "view");
         unsigned int projectionLoc = glGetUniformLocation(shaders.GetID(), "projection");
@@ -145,7 +157,6 @@ void BaseGame::UpdateEngine() {
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
         glBindTexture(GL_TEXTURE_2D, texture);
-
         shaders.Use();
         //glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
 
@@ -157,6 +168,7 @@ void BaseGame::UpdateEngine() {
 }
 
 void BaseGame::UnloadEngine() {
+    UnloadGame();
     _renderer->DeleteBuffers(VAO, VBO, EBO);
     shaders.DeleteProgram();
     glfwTerminate();

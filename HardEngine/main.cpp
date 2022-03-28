@@ -8,9 +8,7 @@ int main() {
     BaseGame* base = new BaseGame();
 
     if (base) {
-        base->InitEngine();
-        base->UpdateEngine();
-        base->UnloadEngine();
+        base->StartEngine();
         delete base;
         base = NULL;
     }

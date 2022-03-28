@@ -23,7 +23,7 @@ namespace Engine {
 		void BindEBO(unsigned int& ebo, unsigned int* indices, int indicesAmount);
 		void DeleteBuffers(unsigned int& vao, unsigned int& vbo, unsigned int& ebo);
 		void UnbindBuffers();
-		//void Draw(unsigned int &vao, unsigned int &vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount);
+		void Draw(unsigned int &vao, unsigned int &vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount);
 		void Draw();
 	};
 }

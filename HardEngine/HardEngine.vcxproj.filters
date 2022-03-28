@@ -19,9 +19,11 @@
     <Filter Include="Entity">
       <UniqueIdentifier>{e60d9e4e-2d50-4e03-bfe9-0a034cc67f43}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shape">
+      <UniqueIdentifier>{84310d5f-9d03-4764-89d2-1fd1bc9a67ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="src\base_game.cpp">
       <Filter>BaseGame</Filter>
     </ClCompile>
@@ -31,11 +33,14 @@
     <ClCompile Include="src\renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="src\shader.cpp">
-      <Filter>Shader</Filter>
-    </ClCompile>
     <ClCompile Include="src\entity2D.cpp">
       <Filter>Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shape.cpp">
+      <Filter>Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -51,11 +56,28 @@
     <ClInclude Include="src\renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="src\shader.h">
-      <Filter>Shader</Filter>
-    </ClInclude>
     <ClInclude Include="src\entity2D.h">
       <Filter>Entity</Filter>
     </ClInclude>
+    <ClInclude Include="src\shape.h">
+      <Filter>Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="src\shader.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\fragmentShader.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="src\fragmentTextureShader.fs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="src\vertexShader.vs">
+      <Filter>Shader</Filter>
+    </None>
+    <None Include="src\vertexTextureShader.vs">
+      <Filter>Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

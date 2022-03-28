@@ -1,11 +1,13 @@
 #include"shader.h"
 #include "GL/glew.h"
-#include "GLFW/glfw3.h"
+#include<iostream>
+#include<fstream>
+#include<sstream>
 
 using namespace Engine;
 
 Shader::Shader() {
-
+	_id = 0;
 }
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath) {
