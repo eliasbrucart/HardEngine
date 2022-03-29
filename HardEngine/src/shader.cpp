@@ -103,6 +103,22 @@ void Shader::Create(const char* vertexPath, const char* fragmentPath) {
 	glDeleteShader(fragment);
 }
 
+void Shader::SetVertexPosition(const char* nameAttrib, int dataSize) {
+	unsigned int posAttribute = glGetAttribLocation(_id, nameAttrib);
+	CreateAttribPointer(0, 3, dataSize, 0);
+}
+
+void Shader::SetVertexColor(const char* nameAttrib, int dataSize) {
+	unsigned int posAttribute = glGetAttribLocation(_id, nameAttrib);
+	CreateAttribPointer(1, 3, dataSize, 3);
+}
+
+void Shader::CreateAttribPointer(unsigned int attributeID, int dataAmount, int dataSize, int dataPos) {
+	glVertexAttribPointer(attributeID, dataAmount, GL_FLOAT, GL_FALSE, dataSize * sizeof(float), (void*)(sizeof(float) * dataPos)); //pasar a la clase shader cuando este
+	glEnableVertexAttribArray(attributeID);
+}
+
+
 void Shader::Use() {
 	glUseProgram(_id);//Habilitamos el uso del objeto de tipo programa que esta enlazado con los objetos de shader que contienen el vertex y fragment shader
     ////asi podremos ejecutar los dos shaders previamente programados.

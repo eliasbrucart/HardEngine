@@ -120,6 +120,9 @@
       <AdditionalLibraryDirectories>$(SolutionDir)HardEngine\lib\glfw-3.3.6.bin.WIN32\lib-vc2019;$(SolutionDir)HardEngine\lib\glew-2.1.0\lib\Win32</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glew32s.lib;glfw3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)HardEngine\EngineDLLCopy.bat" "$(SolutionDir)HardEngine\bin\Debug\HardEngine.dll" "$(SolutionDir)HardEngine\lib\glew-2.1.0\lib\Win32\glew32.dll" "$(SolutionDir)Game"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

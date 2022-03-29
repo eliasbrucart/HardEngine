@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HardEngine", "HardEngine\HardEngine.vcxproj", "{29321E7A-811B-4DFD-A62F-F3D7DD8CC944}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{32104E7B-D423-4030-B240-86B05AA2245A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{29321E7A-811B-4DFD-A62F-F3D7DD8CC944} = {29321E7A-811B-4DFD-A62F-F3D7DD8CC944}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -7,6 +7,7 @@ using namespace Engine;
 
 class Game: public BaseGame {
 private:
+	Shape* _shape;
 public:
 	Game();
 	~Game();

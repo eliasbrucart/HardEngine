@@ -5,6 +5,8 @@
 #include "window.h"
 #include "renderer.h"
 #include "shader.h"
+#include "entity2D.h"
+#include "shape.h"
 
 
 namespace Engine {
@@ -14,6 +16,7 @@ namespace Engine {
 		Renderer* _renderer;
 	protected:
 		Shader shaders;
+		Shader textureShaders;
 		void InitEngine();
 		void StartTriangleData(); //esto va a pertencer a la clase renderer ya que tiene que ver con el dibujado
 		void UpdateEngine();

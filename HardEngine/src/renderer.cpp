@@ -63,6 +63,11 @@ void Renderer::BindEBO(unsigned int& ebo, unsigned int* indices, int indicesAmou
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices) * indicesAmount, indices, GL_STATIC_DRAW);
 }
 
+void Renderer::CreateAttribPointer(unsigned int attributeID, int dataAmount, int dataSize, int dataPos) {
+    glVertexAttribPointer(attributeID, dataAmount, GL_FLOAT, GL_FALSE, dataSize * sizeof(float), (void*)(sizeof(float) * dataPos)); //pasar a la clase shader cuando este
+    glEnableVertexAttribArray(attributeID);
+}
+
 void Renderer::DeleteBuffers(unsigned int& vao, unsigned int& vbo, unsigned int& ebo) {
     glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(1, &vbo);
@@ -76,10 +81,14 @@ void Renderer::UnbindBuffers() {
     glUseProgram(0);
 }
 
-void Renderer::Draw(unsigned int& vao, unsigned int& vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount) {
+void Renderer::Draw(Shader &shader, unsigned int& vao, unsigned int& vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount, int vertexAttribCount) {
     BindVAO(vao);
     //Agregar update de buffers de vao y vbo si es necesario
-
+    //CreateAttribPointer(0, 3, 6, 0);
+    //CreateAttribPointer(1, 3, 6, 3);
+    //shader.SetVertexPosition("aPos", 6);
+    //shader.SetVertexColor("aColor", 6);
+    shader.Use();
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     UnbindBuffers();
 }

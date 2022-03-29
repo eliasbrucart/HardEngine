@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include "export.h"
+#include "shader.h"
 
 struct GLFWwindow;
 
@@ -21,9 +22,11 @@ namespace Engine {
 		void BindVAO(unsigned int& vao);
 		void BindVBO(unsigned int& vbo, float* vertices, int verticesAmount);
 		void BindEBO(unsigned int& ebo, unsigned int* indices, int indicesAmount);
+		void CreateAttribPointer(unsigned int attributeID, int dataAmount, int dataSize, int dataPos);
 		void DeleteBuffers(unsigned int& vao, unsigned int& vbo, unsigned int& ebo);
 		void UnbindBuffers();
-		void Draw(unsigned int &vao, unsigned int &vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount);
+		//Agregar metodos para leer atrubitos del vertex shader y metodos para setear los atributos
+		void Draw(Shader &shader, unsigned int &vao, unsigned int &vbo, float* vertices, int verticesAmount, unsigned int* indices, int indicesAmount, int vertexAttribCount);
 		void Draw();
 	};
 }
